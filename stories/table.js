@@ -1,30 +1,42 @@
 import React from "react";
 import {storiesOf, action} from "@kadira/storybook";
-import Table from '../src';
+import Table from '../src/index';
+import faker from 'faker';
 import '../style/main.less';
 
 storiesOf('Button', module)
     .add('simple', () => {
 
+        let names = [];
+        for (let i = 0; i < 100; i++) {
+            names.push(faker.name.findName());
+        }
+
+        let emails = [];
+        for (let i = 0; i < 100; i++) {
+            emails.push(faker.internet.email());
+        }
+
+        let data = [];
+        for (let i = 0; i < 1000; i++) {
+            data.push(
+                [faker.random.arrayElement(names), faker.random.arrayElement(emails), faker.address.zipCode()]
+            )
+        }
+
         const columns = [
             {
-                title: 'Column 1'
+                title: 'Name'
             },
             {
-                title: 'Column 2'
+                title: 'EMail'
             },
             {
-                title: 'Column 3'
+                title: 'ZIP'
             }
         ];
 
-        const data = [
-            ['11', 'data1.2', 'data1.3'],
-            ['11', 'data2.2', 'data2.3'],
-            ['22', 'data3.2', 'data3.3'],
-        ];
-
         return (
-            <Table columns={columns} data={data}/>
+            <Table columns={columns} data={data} liveResize={false}/>
         )
     });

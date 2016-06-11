@@ -1,4 +1,4 @@
-# React-solid-table
+# react-solid-table
 
 ## Install
 
@@ -9,6 +9,13 @@ $ npm install --save react-solid-table
 ## Features
  
  * resizable columns
+ 
+## Props
+ 
+```
+...
+``` 
+
 
 
 ## License

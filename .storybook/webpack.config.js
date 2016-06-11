@@ -7,6 +7,7 @@ module.exports = {
                 test: /\.less$/,
                 loader: "style!css!less"
             }
-        ],
+        ]
     },
+    target: 'node',
 };

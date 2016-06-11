@@ -10,6 +10,10 @@
   "options": {
     "mocha": "--require scripts/mocha_runner src/**/__tests__/**/*.js"
   },
+  "browser": {
+    "fs": false,
+    "child_process": false
+  },
   "scripts": {
     "prepublish": ". ./scripts/prepublish.sh",
     "lint": "eslint ./src",
@@ -33,6 +37,7 @@
     "css-loader": "^0.23.1",
     "eslint": "1.7.x",
     "eslint-plugin-babel": "2.x.x",
+    "faker": "^3.1.0",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "mocha": "2.x.x",
@@ -42,6 +47,7 @@
     "style-loader": "^0.13.1"
   },
   "dependencies": {
-    "babel-runtime": "6.x.x"
+    "babel-runtime": "6.x.x",
+    "lodash": "^4.13.1"
   }
 }
