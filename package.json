@@ -1,21 +1,17 @@
 {
-  "name": "npm-base",
-  "version": "1.0.0",
-  "description": "A base NPM package for writing a NPM package in ES2015",
+  "name": "react-solid-table",
+  "version": "0.0.1",
+  "description": "Just another table on react",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kadirahq/npm-base.git"
+    "url": "https://github.com/avin/react-solid-table"
   },
   "license": "MIT",
   "options": {
     "mocha": "--require scripts/mocha_runner src/**/__tests__/**/*.js"
   },
-  "browser": {
-    "fs": false,
-    "child_process": false
-  },
   "scripts": {
-    "prepublish": ". ./scripts/prepublish.sh",
+    "prepublish": "babel src --ignore __tests__ --out-dir ./dist",
     "lint": "eslint ./src",
     "lintfix": "eslint ./src --fix",
     "testonly": "mocha $npm_package_options_mocha",

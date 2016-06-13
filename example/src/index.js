@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Table from '../../src/Table';
-import faker from 'faker';
-import '../../style/main.less';
+import {Table, Column} from "../../src/index";
+import faker from "faker";
+import "../../style/main.less";
 
 let names = [];
 for (let i = 0; i < 100; i++) {
@@ -15,33 +15,26 @@ for (let i = 0; i < 100; i++) {
 }
 
 let data = [];
-for (let i = 0; i < 2000; i++) {
+for (let i = 0; i < 200000; i++) {
     data.push(
-        {
-            content: [faker.random.arrayElement(names), faker.random.arrayElement(emails), faker.address.zipCode()],
-            id: i
-        }
+        [i + 1, faker.random.arrayElement(names), faker.random.arrayElement(emails), faker.address.zipCode(), faker.address.zipCode(), faker.address.zipCode(), faker.address.zipCode()]
     )
 }
-
-const columns = [
-    {
-        title: 'Name'
-    },
-    {
-        title: 'EMail'
-    },
-    {
-        title: 'ZIP'
-    }
-];
-
-//perPage={20}
 
 ReactDOM.render(
     <div>
         <div>Table contains <strong>{data.length}</strong> rows.</div>
-        <Table columns={columns} data={data} liveResize={false} perPage={20}/>
+        <Table data={data}
+               height={400}
+               debug>
+            <Column>ID</Column>
+            <Column>Name</Column>
+            <Column>EMail</Column>
+            <Column>ZIP-1</Column>
+            <Column>ZIP-2</Column>
+            <Column>ZIP-3</Column>
+            <Column>ZIP-4</Column>
+        </Table>
     </div>,
     document.getElementById('root')
 );

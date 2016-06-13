@@ -1,72 +1,68 @@
-table {
-  border-top-width: 0;
-  border-right-width: 0;
-  border-bottom-width: 0;
-  border-left-width: 0;
-  border-spacing: 0;
-}
+.react-solid-table {
 
-.tableContainer{
-  border: 1px solid #bbb;
-}
-
-th {
-  background-color: #eee;
-  height: 30px;
-  text-align: center
-}
-
-td, th {
-  text-indent: 5px;
-  color: #444;
-  border-bottom: 1px solid #bbb;
-  border-left: 1px solid #bbb;
-  overflow: hidden;
-
-  &:first-child{
-    border-left: 0;
+  table {
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-spacing: 0;
   }
 
-  &:last-child{
-    border-right: 1px solid #bbb
+  .tableContainer {
+    border: 1px solid #bbb;
   }
-}
 
-tbody{
-  tr:last-child{
-    td, th {
-      border-bottom: 0;
+  th {
+    background-color: #eee;
+    height: 30px;
+    text-align: center
+  }
+
+  td, th {
+    text-indent: 5px;
+    color: #444;
+    border-bottom: 1px solid #bbb;
+    border-left: 1px solid #bbb;
+    overflow: hidden;
+
+    &:first-child {
+      border-left: 0;
+    }
+
+    &:last-child {
+      border-right: 1px solid #bbb
     }
   }
-}
 
+  tbody {
+    tr:last-child {
+      td, th {
+        border-bottom: 0;
+      }
+    }
+  }
 
-th{
-  //border-top: 1px solid #bbb;
+  //CUSTOM SCROLL BAR
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+    background-color: #DDD;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: #888;
+  }
+
+  ::-webkit-scrollbar-thumb:window-inactive {
+    background: #aaa;
+  }
+
 }
-//
-///* Let's get this party started */
-//::-webkit-scrollbar {
-//  width: 6px;
-//  z-index: 999;
-//}
-//
-///* Track */
-//::-webkit-scrollbar-track {
-//  //-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-//  background-color: #DDD;
-//  //-webkit-border-radius: 10px;
-//  //border-radius: 10px;
-//}
-//
-///* Handle */
-//::-webkit-scrollbar-thumb {
-//  //-webkit-border-radius: 10px;
-//  //border-radius: 5px;
-//  //background: rgba(255,0,0,0.8);
-//  background: #888;
-//  //-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-//}
-//::-webkit-scrollbar-thumb:window-inactive {
-//  background: #aaa;
-//}

@@ -135,7 +135,7 @@ export default class Table extends React.Component {
 
         return (
             <thead key="thead">
-                <tr>
+                <tr style={{whiteSpace: 'nowrap'}}>
                     {columns}
                 </tr>
             </thead>
@@ -390,7 +390,7 @@ export default class Table extends React.Component {
 
 
         return (
-            <div style={{width}}>
+            <div className="react-solid-table" style={{width}}>
 
                 <div ref="tableContainer"
                      className="tableContainer"

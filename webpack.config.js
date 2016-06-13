@@ -2,7 +2,6 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-    devtool: 'cheap-module-eval-source-map',
     entry: [
         './example/src/index.js'
     ],
@@ -29,7 +28,7 @@ module.exports = {
     devServer: {
         contentBase: './example/dist',
     },
-    target: 'node',
+    //target: 'node',
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {
