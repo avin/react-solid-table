@@ -26,7 +26,10 @@ export default class Table extends React.Component {
             colWidths: [],
             tableHeight: null,
             tableWidth: null,
-            draggingSeparatorIndex: null
+            draggingSeparatorIndex: null,
+            headerHeight: props.headerHeight || 50,
+            rowHeight: props.rowHeight || 50
+
         }
     }
 
@@ -103,7 +106,7 @@ export default class Table extends React.Component {
     }
 
     renderHead() {
-        const {colWidths, sort} = this.state;
+        const {colWidths, sort, headerHeight} = this.state;
 
         const columns = React.Children.map(this.props.children, (column, columnIndex) => {
 
@@ -119,7 +122,8 @@ export default class Table extends React.Component {
                         onClick: (e, thIndex) => {
                             this.sortBy(e, thIndex)
                         },
-                        width: colWidth || column.props.width
+                        width: colWidth || column.props.width,
+                        height: headerHeight
                     }
                 )
             )
@@ -136,7 +140,7 @@ export default class Table extends React.Component {
 
     renderBody() {
         const {perPage, height} = this.props;
-        const {page, colWidths, containerScrollTop} = this.state;
+        const {page, colWidths, containerScrollTop, rowHeight} = this.state;
         const data = this.data;
 
         //Params for non-pages table
@@ -144,9 +148,8 @@ export default class Table extends React.Component {
         let topHiddenHeight = 0;
         let bottomHiddenHeight = 0;
 
-        const count = (height / 23);
-        const from = ((containerScrollTop || 0) / 23);
-
+        const count = (height / rowHeight);
+        const from = ((containerScrollTop || 0) / rowHeight);
 
 
         let listData;
@@ -155,9 +158,9 @@ export default class Table extends React.Component {
             listData = data.slice(page * perPage, page * perPage + perPage);
         } else {
 
-            topHiddenHeight = from * 23;
+            topHiddenHeight = from * rowHeight;
 
-            bottomHiddenHeight = (data.length - (from + count)) * 23;
+            bottomHiddenHeight = (data.length - (from + count)) * rowHeight;
             bottomHiddenHeight = (bottomHiddenHeight >= 0) ? bottomHiddenHeight : 0;
 
             listData = data.slice(from, from + count);
@@ -177,7 +180,7 @@ export default class Table extends React.Component {
             const key = trIndex + from;
 
             return (
-                <tr key={key}>
+                <tr key={key} style={{height: rowHeight, whiteSpace: 'nowrap'}}>
                     {tds}
                 </tr>
             )
@@ -353,7 +356,12 @@ export default class Table extends React.Component {
             tableLayout: 'fixed',
         };
 
-        //debugger;
+        const tableContainerStyle = {
+            position: 'relative',
+            height: height,
+            overflowY: 'auto',
+            overflowX: 'hidden'
+        };
 
         const fixedTableStyle = {
             width: theadWidth,
@@ -368,7 +376,7 @@ export default class Table extends React.Component {
             <div style={{}}>
 
                 <div ref="tableContainer"
-                     style={{position: 'relative', height: height, overflowY: 'auto', overflowX: 'hidden',}}
+                     style={tableContainerStyle}
                      onMouseMove={(e) => {this.onDragSeparator(e)}}
                      onMouseUp={(e) => {this.onStopDragSeparator(e)}}
                      onMouseLeave={(e) => {this.onStopDragSeparator(e)}}

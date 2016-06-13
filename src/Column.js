@@ -3,7 +3,7 @@ import React from "react";
 export default class Column extends React.Component {
 
     render(){
-        const {sortProp, onClick, columnIndex, width} = this.props;
+        const {sortProp, onClick, columnIndex, width, height} = this.props;
 
         let style = {
             cursor: 'pointer',
@@ -11,6 +11,7 @@ export default class Column extends React.Component {
             WebkitUserSelect: 'none',
             msUserSelect: 'none',
             width,
+            height
         };
 
         let sortIndicator;
