@@ -7,7 +7,6 @@ export default class Table extends React.Component {
 
     static propTypes = {
         data: React.PropTypes.array.isRequired,
-        columns: React.PropTypes.array.isRequired,
         //liveResize: React.PropTypes.bool,
         debug: React.PropTypes.bool,
         perPage: React.PropTypes.number,
@@ -35,14 +34,16 @@ export default class Table extends React.Component {
         const table = ReactDOM.findDOMNode(this.refs.table);
         const tableHeight = table.offsetHeight;
         const tableWidth = table.offsetWidth;
+        let theadWidth = 0;
 
         const ths = table.querySelectorAll('thead th');
         let colWidths = [];
         ths.forEach((th) => {
             colWidths.push(th.offsetWidth);
+            theadWidth += th.offsetWidth;
         });
 
-        this.setState({colWidths, tableHeight, tableWidth});
+        this.setState({colWidths, tableHeight, tableWidth, theadWidth});
     }
 
     sortBy(e, columnIndex) {
@@ -102,81 +103,68 @@ export default class Table extends React.Component {
     }
 
     renderHead() {
-        const {columns} = this.props;
         const {colWidths, sort} = this.state;
 
-        const ths = columns.map((column, thIndex) => {
-            let style = {
-                cursor: 'pointer',
-                MozUserSelect: 'none',
-                WebkitUserSelect: 'none',
-                msUserSelect: 'none',
-            };
+        const columns = React.Children.map(this.props.children, (column, columnIndex) => {
 
-            if (colWidths[thIndex] !== undefined) {
-                style.width = colWidths[thIndex];
-            }
-
-            let sortIndicator;
-            const sortProp = find(sort, {columnIndex: thIndex});
-            if (sortProp) {
-                const sortSpanStyle = {
-                    paddingLeft: 5,
-                    color: '#999',
-                };
-
-                switch (sortProp.order) {
-                    case 'asc':
-                    {
-                        sortIndicator = (
-                            <span style={sortSpanStyle}>▲</span>
-                        );
-                        break;
-                    }
-                    case 'desc':
-                    {
-                        sortIndicator = (
-                            <span style={sortSpanStyle}>▼</span>
-                        );
-                        break;
-                    }
-                }
-            }
+            const sortProp = find(sort, {columnIndex});
+            const colWidth = colWidths[columnIndex];
 
             return (
-                <th key={thIndex}
-                    style={style}
-                    onClick={(e) => {this.sortBy(e, thIndex)}}>
-                    {column.title}
-                    {sortIndicator}
-                </th>
+                React.cloneElement(
+                    column,
+                    {
+                        sortProp: sortProp,
+                        columnIndex: columnIndex,
+                        onClick: (e, thIndex) => {
+                            this.sortBy(e, thIndex)
+                        },
+                        width: colWidth || column.props.width
+                    }
+                )
             )
         });
 
         return (
             <thead key="thead">
                 <tr>
-                    {ths}
+                    {columns}
                 </tr>
             </thead>
         );
     }
 
     renderBody() {
-        const {perPage} = this.props;
-        const {page, colWidths} = this.state;
+        const {perPage, height} = this.props;
+        const {page, colWidths, containerScrollTop} = this.state;
         const data = this.data;
 
+        //Params for non-pages table
+
+        let topHiddenHeight = 0;
+        let bottomHiddenHeight = 0;
+
+        const count = (height / 23);
+        const from = ((containerScrollTop || 0) / 23);
+
+
+
         let listData;
+
         if (perPage) {
             listData = data.slice(page * perPage, page * perPage + perPage);
         } else {
-            listData = data;
+
+            topHiddenHeight = from * 23;
+
+            bottomHiddenHeight = (data.length - (from + count)) * 23;
+            bottomHiddenHeight = (bottomHiddenHeight >= 0) ? bottomHiddenHeight : 0;
+
+            listData = data.slice(from, from + count);
         }
 
-
         const trs = listData.map((row, trIndex) => {
-            const tds = row.content.map((dataItem, tdIndex) => {
+            const tds = row.map((dataItem, tdIndex) => {
                 let style = {};
                 if (colWidths[tdIndex] !== undefined) {
                     style.width = colWidths[tdIndex];
@@ -186,8 +174,10 @@ export default class Table extends React.Component {
                 )
             });
 
+            const key = trIndex + from;
+
             return (
-                <tr key={row.id}>
+                <tr key={key}>
                     {tds}
                 </tr>
             )
@@ -195,7 +185,9 @@ export default class Table extends React.Component {
 
         return (
             <tbody key="tbody">
+                <tr style={{height: topHiddenHeight}}/>
                 {trs}
+                <tr style={{height: bottomHiddenHeight}}/>
             </tbody>
         );
     }
@@ -222,6 +214,7 @@ export default class Table extends React.Component {
                 backgroundColor: '#f00',
                 height: tableHeight,
                 position: 'absolute',
+                zIndex: 10,
                 cursor: 'col-resize',
                 opacity: debug ? 0.1 : 0
             };
@@ -348,24 +341,49 @@ export default class Table extends React.Component {
         }
     }
 
+    onScrollTableContainer(e) {
+        this.setState({containerScrollTop: e.target.scrollTop})
+    }
+
     render() {
+        const {theadWidth, containerScrollTop} = this.state;
+        const {height} = this.props;
+
         const tableStyle = {
             tableLayout: 'fixed',
+        };
+
+        //debugger;
+
+        const fixedTableStyle = {
+            width: theadWidth,
+            tableLayout: 'fixed',
+            position: 'absolute',
+            top: containerScrollTop
         };
 
         //style={{height: 400, overflowY: 'auto', overflowX: 'hidden', }}
 
         return (
-            <div>
-                <div
-                    onMouseMove={(e) => {this.onDragSeparator(e)}}
+            <div style={{}}>
+
+                <div ref="tableContainer"
+                     style={{position: 'relative', height: height, overflowY: 'auto', overflowX: 'hidden',}}
+                     onMouseMove={(e) => {this.onDragSeparator(e)}}
                      onMouseUp={(e) => {this.onStopDragSeparator(e)}}
-                     onMouseLeave={(e) => {this.onStopDragSeparator(e)}}>
+                     onMouseLeave={(e) => {this.onStopDragSeparator(e)}}
+                     onScroll={(e) => {this.onScrollTableContainer(e)}}>
+
                     {this.renderBlockScreen()}
                     {this.renderControl()}
+
                     <table style={tableStyle} ref="table">
                         {this.renderHead()}
                         {this.renderBody()}
+                    </table>
+
+                    <table style={fixedTableStyle}>
+                        {this.renderHead()}
                     </table>
                 </div>
                 {this.renderPagination()}
