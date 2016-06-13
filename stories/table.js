@@ -15,7 +15,7 @@ for (let i = 0; i < 100; i++) {
 }
 
 let data = [];
-for (let i = 0; i < 200; i++) {
+for (let i = 0; i < 2000; i++) {
     data.push(
         [i + 1, faker.random.arrayElement(names), faker.random.arrayElement(emails), faker.address.zipCode(), faker.address.zipCode(), faker.address.zipCode(), faker.address.zipCode()]
     )
@@ -62,7 +62,7 @@ storiesOf('Button', module)
             </div>
         )
     })
-    .add('fixed width', () => {
+    .add('fixed width with first static column', () => {
 
         return (
             <div>
@@ -72,7 +72,8 @@ storiesOf('Button', module)
                        height={400}
                        width={900}
                        headerHeight={50}
-                       debug>
+                       fixedFirstColumn
+                       >
                     <Column width={80}>ID</Column>
                     <Column width={400}>Name</Column>
                     <Column>EMail</Column>

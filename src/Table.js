@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import find from "lodash/find";
 import orderBy from "lodash/orderBy";
+import {clearSelection} from "./helpers";
+
 
 export default class Table extends React.Component {
 
@@ -109,10 +111,14 @@ export default class Table extends React.Component {
         }, 1);
     }
 
-    renderHead() {
+    renderHead(onlyFirstColumn = false) {
         const {colWidths, sort, headerHeight} = this.state;
 
         const columns = React.Children.map(this.props.children, (column, columnIndex) => {
+
+            if (onlyFirstColumn && (columnIndex !== 0)) {
+                return;
+            }
 
             const sortProp = find(sort, {columnIndex});
             const colWidth = colWidths[columnIndex];
@@ -142,7 +148,7 @@ export default class Table extends React.Component {
         );
     }
 
-    renderBody() {
+    renderBody(onlyFirstColumn = false) {
         const {perPage, height} = this.props;
         const {page, colWidths, containerScrollTop, rowHeight} = this.state;
         const data = this.data;
@@ -172,6 +178,10 @@ export default class Table extends React.Component {
 
         const trs = listData.map((row, trIndex) => {
             const tds = row.map((dataItem, tdIndex) => {
+                if (onlyFirstColumn && (tdIndex !== 0)) {
+                    return;
+                }
+
                 let style = {};
                 if (colWidths[tdIndex] !== undefined) {
                     //style.width = colWidths[tdIndex];
@@ -191,7 +201,7 @@ export default class Table extends React.Component {
         });
 
         let bottomHiddenTr;
-        if (bottomHiddenHeight){
+        if (bottomHiddenHeight) {
             bottomHiddenTr = (
                 <tr style={{height: bottomHiddenHeight}}/>
             )
@@ -207,8 +217,8 @@ export default class Table extends React.Component {
     }
 
     renderControl() {
-        const {colWidths, tableHeight, tableWidth, draggingSeparatorIndex} = this.state;
-        const {debug} = this.props;
+        const {colWidths, tableHeight, tableWidth, draggingSeparatorIndex, containerScrollLeft} = this.state;
+        const {debug, fixedFirstColumn} = this.props;
 
         const style = {
             position: 'relative',
@@ -222,21 +232,22 @@ export default class Table extends React.Component {
                 return;
             }
 
+            let firstSeparatorLeftOffset = 0;
+            if (fixedFirstColumn){
+                firstSeparatorLeftOffset = containerScrollLeft || 0;
+            }
+
             const style = {
-                left: colWidth + leftOffset,
+                left: colWidth + leftOffset + ((index===0) ? firstSeparatorLeftOffset : 0),
                 paddingLeft: 5,
                 paddingRight: 5,
                 backgroundColor: '#f00',
                 height: tableHeight,
                 position: 'absolute',
-                zIndex: 10,
+                zIndex: 3,
                 cursor: 'col-resize',
                 opacity: debug ? 0.1 : 0
             };
-
-            if (isNaN(style.left)) {
-                debugger;
-            }
 
             leftOffset = leftOffset + colWidth + 3;
 
@@ -251,9 +262,12 @@ export default class Table extends React.Component {
             position: 'absolute',
             width: tableWidth,
             height: tableHeight,
-            zIndex: 9,
+            zIndex: 2,
             backgroundColor: '#0F0',
-            opacity: debug ? 0.1 : 0
+            opacity: debug ? 0.1 : 0,
+            MozUserSelect: 'none',
+            WebkitUserSelect: 'none',
+            msUserSelect: 'none'
         };
 
         let blockingSelectDiv;
@@ -309,6 +323,8 @@ export default class Table extends React.Component {
     }
 
     onStartDragSeparator(e, separatorIndex) {
+        clearSelection();
+
         this.setState({
             draggingSeparatorX: e.clientX,
             draggingSeparatorIndex: separatorIndex
@@ -358,11 +374,67 @@ export default class Table extends React.Component {
     }
 
     onScrollTableContainer(e) {
-        this.setState({containerScrollTop: e.target.scrollTop})
+        this.setState({
+            containerScrollTop: e.target.scrollTop,
+            containerScrollLeft: e.target.scrollLeft
+        });
+    }
+
+    renderFixedFirstColumn() {
+        const {containerScrollLeft, containerScrollTop, colWidths} = this.state;
+        const {fixedFirstColumn} = this.props;
+
+        if (!fixedFirstColumn) {
+            return;
+        }
+
+        let shadow = undefined;
+        if (containerScrollLeft){
+            shadow = `#999 0px 0px ${(containerScrollLeft < 10) ? containerScrollLeft : 10}px`
+        }
+
+        const fixedFirstColumnTableStyle = {
+            tableLayout: 'fixed',
+            minWidth: colWidths[0],
+            maxWidth: colWidths[0],
+            width: colWidths[0],
+            position: 'absolute',
+
+            zIndex: 1,
+            top: 0,
+            left: containerScrollLeft,
+            boxShadow: shadow
+        };
+
+        const fixedFirstColumnHeaderTableStyle = {
+            minWidth: colWidths[0],
+            maxWidth: colWidths[0],
+            width: colWidths[0],
+            tableLayout: 'fixed',
+            position: 'absolute',
+
+            zIndex: 1, //!
+            top: containerScrollTop, //!
+            left: containerScrollLeft  //!
+        };
+
+        return (
+            <div>
+                <table style={fixedFirstColumnTableStyle} ref="staticTable">
+                    {this.renderHead(true)}
+                    {this.renderBody(true)}
+                </table>
+
+                <table style={fixedFirstColumnHeaderTableStyle}>
+                    {this.renderHead(true)}
+                </table>
+            </div>
+        )
+
     }
 
     render() {
-        const {theadWidth, containerScrollTop, tableWidth} = this.state;
+        const {theadWidth, containerScrollTop} = this.state;
         const {height, width} = this.props;
 
         const tableStyle = {
@@ -379,7 +451,7 @@ export default class Table extends React.Component {
             overflowX: width ? 'auto' : 'hidden'
         };
 
-        const fixedTableStyle = {
+        const fixedHeaderTableStyle = {
             minWidth: theadWidth,
             maxWidth: theadWidth,
             width: theadWidth,
@@ -387,7 +459,6 @@ export default class Table extends React.Component {
             position: 'absolute',
             top: containerScrollTop
         };
-
 
         return (
             <div className="react-solid-table" style={{width}}>
@@ -408,10 +479,14 @@ export default class Table extends React.Component {
                         {this.renderBody()}
                     </table>
 
-                    <table style={fixedTableStyle}>
+                    <table style={fixedHeaderTableStyle}>
                         {this.renderHead()}
                     </table>
+
+                    {this.renderFixedFirstColumn()}
+
                 </div>
+
                 {this.renderPagination()}
             </div>
         )
