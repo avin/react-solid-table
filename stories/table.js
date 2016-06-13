@@ -17,7 +17,7 @@ for (let i = 0; i < 100; i++) {
 let data = [];
 for (let i = 0; i < 200; i++) {
     data.push(
-        [i + 1, faker.random.arrayElement(names), faker.random.arrayElement(emails), faker.address.zipCode()]
+        [i + 1, faker.random.arrayElement(names), faker.random.arrayElement(emails), faker.address.zipCode(), faker.address.zipCode(), faker.address.zipCode(), faker.address.zipCode()]
     )
 }
 
@@ -33,7 +33,10 @@ storiesOf('Button', module)
                     <Column>ID</Column>
                     <Column>Name</Column>
                     <Column>EMail</Column>
-                    <Column>ZIP</Column>
+                    <Column>ZIP-1</Column>
+                    <Column>ZIP-2</Column>
+                    <Column>ZIP-3</Column>
+                    <Column>ZIP-4</Column>
                 </Table>
             </div>
         )
@@ -51,7 +54,10 @@ storiesOf('Button', module)
                     <Column>ID</Column>
                     <Column>Name</Column>
                     <Column>EMail</Column>
-                    <Column>ZIP</Column>
+                    <Column>ZIP-1</Column>
+                    <Column>ZIP-2</Column>
+                    <Column>ZIP-3</Column>
+                    <Column>ZIP-4</Column>
                 </Table>
             </div>
         )
@@ -67,10 +73,13 @@ storiesOf('Button', module)
                        width={900}
                        headerHeight={50}
                        debug>
-                    <Column width={800}>ID</Column>
-                    <Column width={800}>Name</Column>
-                    <Column width={800}>EMail</Column>
-                    <Column width={800}>ZIP</Column>
+                    <Column width={80}>ID</Column>
+                    <Column width={400}>Name</Column>
+                    <Column>EMail</Column>
+                    <Column>ZIP-1</Column>
+                    <Column>ZIP-2</Column>
+                    <Column>ZIP-3</Column>
+                    <Column>ZIP-4</Column>
                 </Table>
             </div>
         )

@@ -44,8 +44,8 @@ export default class Table extends React.Component {
         let colWidths = [];
 
         React.Children.forEach(this.props.children, (column) => {
-            const colWidth = column.props.width || tableWidth / ths.length;
-            console.log(colWidth);
+            const colWidth = Math.floor(column.props.width || tableWidth / ths.length);
+
             colWidths.push(colWidth);
             theadWidth += colWidth;
         });
@@ -94,7 +94,7 @@ export default class Table extends React.Component {
         const sortColumnsArr = [];
         const orderArr = [];
         newSort.forEach((sortItem) => {
-            sortColumnsArr.push(`content.${sortItem.columnIndex}`);
+            sortColumnsArr.push(`${sortItem.columnIndex}`);
             orderArr.push(sortItem.order);
         });
 
@@ -174,7 +174,7 @@ export default class Table extends React.Component {
             const tds = row.map((dataItem, tdIndex) => {
                 let style = {};
                 if (colWidths[tdIndex] !== undefined) {
-                    style.width = colWidths[tdIndex];
+                    //style.width = colWidths[tdIndex];
                 }
                 return (
                     <td style={style} key={tdIndex}>{dataItem}</td>
@@ -190,11 +190,18 @@ export default class Table extends React.Component {
             )
         });
 
+        let bottomHiddenTr;
+        if (bottomHiddenHeight){
+            bottomHiddenTr = (
+                <tr style={{height: bottomHiddenHeight}}/>
+            )
+        }
+
         return (
             <tbody key="tbody">
                 <tr style={{height: topHiddenHeight}}/>
                 {trs}
-                <tr style={{height: bottomHiddenHeight}}/>
+                {bottomHiddenTr}
             </tbody>
         );
     }
@@ -217,7 +224,8 @@ export default class Table extends React.Component {
 
             const style = {
                 left: colWidth + leftOffset,
-                width: 10,
+                paddingLeft: 5,
+                paddingRight: 5,
                 backgroundColor: '#f00',
                 height: tableHeight,
                 position: 'absolute',
@@ -230,7 +238,7 @@ export default class Table extends React.Component {
                 debugger;
             }
 
-            leftOffset = leftOffset + colWidth;
+            leftOffset = leftOffset + colWidth + 3;
 
             return (
                 <div key={`separator_${index}`}
@@ -243,6 +251,7 @@ export default class Table extends React.Component {
             position: 'absolute',
             width: tableWidth,
             height: tableHeight,
+            zIndex: 9,
             backgroundColor: '#0F0',
             opacity: debug ? 0.1 : 0
         };
@@ -359,7 +368,8 @@ export default class Table extends React.Component {
         const tableStyle = {
             tableLayout: 'fixed',
             minWidth: theadWidth,
-            maxWidth: theadWidth
+            maxWidth: theadWidth,
+            width: theadWidth
         };
 
         const tableContainerStyle = {
@@ -372,17 +382,18 @@ export default class Table extends React.Component {
         const fixedTableStyle = {
             minWidth: theadWidth,
             maxWidth: theadWidth,
+            width: theadWidth,
             tableLayout: 'fixed',
             position: 'absolute',
             top: containerScrollTop
         };
 
-        //style={{height: 400, overflowY: 'auto', overflowX: 'hidden', }}
 
         return (
             <div style={{width}}>
 
                 <div ref="tableContainer"
+                     className="tableContainer"
                      style={tableContainerStyle}
                      onMouseMove={(e) => {this.onDragSeparator(e)}}
                      onMouseUp={(e) => {this.onStopDragSeparator(e)}}

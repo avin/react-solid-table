@@ -1,10 +1,13 @@
 table {
-  //width: 100%;
   border-top-width: 0;
   border-right-width: 0;
   border-bottom-width: 0;
   border-left-width: 0;
   border-spacing: 0;
+}
+
+.tableContainer{
+  border: 1px solid #bbb;
 }
 
 th {
@@ -20,13 +23,26 @@ td, th {
   border-left: 1px solid #bbb;
   overflow: hidden;
 
+  &:first-child{
+    border-left: 0;
+  }
+
   &:last-child{
     border-right: 1px solid #bbb
   }
 }
 
+tbody{
+  tr:last-child{
+    td, th {
+      border-bottom: 0;
+    }
+  }
+}
+
+
 th{
-  border-top: 1px solid #bbb;
+  //border-top: 1px solid #bbb;
 }
 //
 ///* Let's get this party started */
