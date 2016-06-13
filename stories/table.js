@@ -15,7 +15,7 @@ for (let i = 0; i < 100; i++) {
 }
 
 let data = [];
-for (let i = 0; i < 1000; i++) {
+for (let i = 0; i < 200; i++) {
     data.push(
         [i + 1, faker.random.arrayElement(names), faker.random.arrayElement(emails), faker.address.zipCode()]
     )
@@ -28,9 +28,8 @@ storiesOf('Button', module)
             <div>
                 <div>Table contains <strong>{data.length}</strong> rows.</div>
                 <Table data={data}
-                       debug
                        height={400}
-                       >
+                       debug>
                     <Column>ID</Column>
                     <Column>Name</Column>
                     <Column>EMail</Column>
@@ -47,7 +46,8 @@ storiesOf('Button', module)
                 <Table data={data}
                        rowHeight={25}
                        headerHeight={50}
-                       perPage={10}>
+                       perPage={10}
+                       debug>
                     <Column>ID</Column>
                     <Column>Name</Column>
                     <Column>EMail</Column>
@@ -64,12 +64,13 @@ storiesOf('Button', module)
                 <Table data={data}
                        rowHeight={25}
                        height={400}
-                       width={800}
-                       headerHeight={50}>
-                    <Column>ID</Column>
-                    <Column>Name</Column>
-                    <Column>EMail</Column>
-                    <Column>ZIP</Column>
+                       width={900}
+                       headerHeight={50}
+                       debug>
+                    <Column width={800}>ID</Column>
+                    <Column width={800}>Name</Column>
+                    <Column width={800}>EMail</Column>
+                    <Column width={800}>ZIP</Column>
                 </Table>
             </div>
         )

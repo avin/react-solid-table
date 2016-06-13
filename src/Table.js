@@ -35,15 +35,19 @@ export default class Table extends React.Component {
 
     componentDidMount() {
         const table = ReactDOM.findDOMNode(this.refs.table);
+        const tableContainer = ReactDOM.findDOMNode(this.refs.tableContainer);
         const tableHeight = table.offsetHeight;
-        const tableWidth = table.offsetWidth;
+        const tableWidth = tableContainer.offsetWidth;
         let theadWidth = 0;
 
         const ths = table.querySelectorAll('thead th');
         let colWidths = [];
-        ths.forEach((th) => {
-            colWidths.push(th.offsetWidth);
-            theadWidth += th.offsetWidth;
+
+        React.Children.forEach(this.props.children, (column) => {
+            const colWidth = column.props.width || tableWidth / ths.length;
+            console.log(colWidth);
+            colWidths.push(colWidth);
+            theadWidth += colWidth;
         });
 
         this.setState({colWidths, tableHeight, tableWidth, theadWidth});
@@ -122,7 +126,7 @@ export default class Table extends React.Component {
                         onClick: (e, thIndex) => {
                             this.sortBy(e, thIndex)
                         },
-                        width: colWidth || column.props.width,
+                        width: colWidth,
                         height: headerHeight
                     }
                 )
@@ -349,22 +353,25 @@ export default class Table extends React.Component {
     }
 
     render() {
-        const {theadWidth, containerScrollTop} = this.state;
-        const {height} = this.props;
+        const {theadWidth, containerScrollTop, tableWidth} = this.state;
+        const {height, width} = this.props;
 
         const tableStyle = {
             tableLayout: 'fixed',
+            minWidth: theadWidth,
+            maxWidth: theadWidth
         };
 
         const tableContainerStyle = {
             position: 'relative',
             height: height,
-            overflowY: 'auto',
-            overflowX: 'hidden'
+            overflowY: height ? 'auto' : 'hidden',
+            overflowX: width ? 'auto' : 'hidden'
         };
 
         const fixedTableStyle = {
-            width: theadWidth,
+            minWidth: theadWidth,
+            maxWidth: theadWidth,
             tableLayout: 'fixed',
             position: 'absolute',
             top: containerScrollTop
@@ -373,7 +380,7 @@ export default class Table extends React.Component {
         //style={{height: 400, overflowY: 'auto', overflowX: 'hidden', }}
 
         return (
-            <div style={{}}>
+            <div style={{width}}>
 
                 <div ref="tableContainer"
                      style={tableContainerStyle}
